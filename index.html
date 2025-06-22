@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Steps to Complete Assignment</title>
+  <style>
+    /* Base Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Natural Space Background with Fewer Stars */
+    body {
+      background-color: #000;
+      /* Increase spacing to naturally reduce star count */
+      background-image: radial-gradient(white 1px, transparent 1px),
+                        radial-gradient(white 1px, transparent 1px);
+      background-size: 100px 100px;
+      background-position: 0 0, 50px 50px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      padding-bottom: 60px; /* room for fixed footer */
+    }
+
+    /* Link Styles */
+    a {
+      color: #1e90ff;
+      text-decoration: none;
+    }
+    a:hover {
+      color: #ff69b4;
+    }
+    a:active {
+      color: #ffcc00;
+    }
+
+    /* Glowing Heading */
+    header h1 {
+      text-align: center;
+      font-size: 2.5em;
+      margin-top: 20px;
+      animation: glow 1.5s infinite alternate;
+    }
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #00f, 0 0 20px #f00, 0 0 30px #ff69b4;
+      }
+      to {
+        text-shadow: 0 0 20px #ffa500, 0 0 30px #fff, 0 0 40px #00f;
+      }
+    }
+
+    /* Container for adding subjects and steps */
+    .subject-form, .step-form {
+      display: flex;
+      gap: 10px;
+      margin: 20px auto;
+      max-width: 800px;
+      padding: 0 10px;
+    }
+    .subject-form input, .subject-form button,
+    .step-form input, .step-form button {
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+    }
+    .subject-form input[type="text"],
+    .step-form input[type="text"] {
+      flex: 1;
+    }
+    .subject-form input[type="date"] {
+      background: #222;
+      color: #fff;
+    }
+    .subject-form button,
+    .step-form button {
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .subject-form button {
+      background-color: #1e90ff; /* blue */
+      color: #fff;
+    }
+    .subject-form button:hover {
+      background-color: #187bcd;
+    }
+    .step-form button {
+      background-color: #ff4500; /* red/orange */
+      color: #fff;
+    }
+    .step-form button:hover {
+      background-color: #e03e00;
+    }
+
+    /* Subject Container */
+    .subject-container {
+      background: rgba(20, 20, 20, 0.9);
+      border: 1px solid #444;
+      border-radius: 10px;
+      margin: 20px auto;
+      max-width: 800px;
+      overflow: hidden;
+      transition: all 0.5s ease;
+    }
+    .subject-header {
+      padding: 15px;
+      background: linear-gradient(45deg, #ff69b4, #ffa500);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .subject-header .subject-info {
+      flex: 1;
+    }
+    .subject-header span {
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    .subject-header small {
+      margin-left: 10px;
+      font-size: 0.9em;
+      color: #ddd;
+    }
+    .subject-controls button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      font-size: 0.9em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .subject-controls button.edit-btn {
+      background-color: #00ff7f;
+      color: #000;
+    }
+    .subject-controls button.edit-btn:hover {
+      background-color: #00e673;
+    }
+    .subject-controls button.delete-btn {
+      background-color: #dc143c;
+      color: #fff;
+    }
+    .subject-controls button.delete-btn:hover {
+      background-color: #c10f30;
+    }
+    .subject-controls button.save-btn {
+      background-color: #1e90ff;
+      color: #fff;
+    }
+    .subject-controls button.save-btn:hover {
+      background-color: #187bcd;
+    }
+
+    /* Collapsible Content */
+    .subject-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+      padding: 0 15px;
+    }
+    .subject-content.active {
+      max-height: 1000px; /* arbitrary high value */
+      padding: 15px;
+    }
+
+    /* Steps List */
+    .steps-list {
+      list-style: none;
+      margin: 15px 0;
+      padding: 0;
+    }
+    .steps-list li {
+      background: rgba(255, 255, 255, 0.1);
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .steps-list li span.step-number {
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .steps-list li span.step-desc {
+      flex: 1;
+    }
+    .steps-list li input[type="checkbox"] {
+      margin-right: 10px;
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+    .steps-list li button.delete-step-btn {
+      background: #dc143c;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .steps-list li button.delete-step-btn:hover {
+      background: #c10f30;
+    }
+    /* Completed step style */
+    .steps-list li.completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      background: #444;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 10px 0;
+      position: relative;
+    }
+    .progress-bar {
+      height: 20px;
+      width: 0;
+      background: linear-gradient(45deg, #00f, #ff4500, #ff69b4, #ffa500, #fff);
+      transition: width 0.5s ease;
+      text-align: center;
+      line-height: 20px;
+      color: #000;
+      font-weight: bold;
+    }
+
+    /* Clear All Checks Button */
+    .clear-checks-btn {
+      background: #ff4500;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    .clear-checks-btn:hover {
+      background: #e03e00;
+    }
+
+    /* Instruction Hint */
+    .instruction-hint {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 1.1em;
+      color: #add8e6; /* Light blue for visibility */
+      font-style: italic;
+    }
+    /* Footer */
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px 0;
+      font-size: 0.9em;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Steps to Complete Assignment</h1>
+  </header>
+
+  <!-- Subject Form -->
+  <div class="subject-form">
+    <input type="text" id="subjectName" placeholder="Enter Subject Name" />
+    <input type="date" id="subjectDeadline" />
+    <button onclick="addSubject()">Add Subject</button>
+  </div>
+  
+  <p class="instruction-hint">(Click on the created subject to get the steps)</p>
+
+  <!-- Subjects Container -->
+  <div id="subjectsContainer"></div>
+
+  <!-- Footer Credit (fixed at bottom) -->
+  <footer>
+    CREATED WITH PASSION BY NANDA KISHORE SREEJITH SBNG CSE
+  </footer>
+
+  <script>
+    // Global variable to store which subjects are expanded (open state)
+    let openSubjects = {};
+
+    // Function that returns a new array of default steps with fresh IDs
+    function getDefaultSteps() {
+      const now = Date.now();
+      return [
+        { id: now + 1, description: "Copy paste the question in GPT", completed: false },
+        { id: now + 2, description: "Humanise the content from GPT through <a href='https://www.humanizeai.pro' target='_blank'>www.humanizeai.pro</a>", completed: false },
+        { id: now + 3, description: "Edit the code in PDF, or convert PDF to docs or vice versa via <a href='https://www.ilovepdf.com' target='_blank'>https://www.ilovepdf.com</a>", completed: false },
+        { id: now + 4, description: "Submit your assignment", completed: false }
+      ];
+    }
+
+    // Predefined default subject with default steps if no data exists
+    const defaultSubject = {
+      id: Date.now(),
+      name: "Assignment",
+      deadline: "2025-12-31",
+      steps: getDefaultSteps()
+    };
+
+    // Load subjects from localStorage on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      const stored = localStorage.getItem("subjectsData");
+      if (stored) {
+        subjects = JSON.parse(stored);
+      } else {
+        subjects.push(defaultSubject);
+        saveData();
+      }
+      sortSubjects();
+      renderSubjects();
+    });
+
+    // Data structure for subjects (array of subject objects)
+    let subjects = [];
+
+    // Save to localStorage
+    function saveData() {
+      localStorage.setItem("subjectsData", JSON.stringify(subjects));
+    }
+
+    // Sort subjects based on deadline (earliest first)
+    function sortSubjects() {
+      subjects.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+    }
+
+    // Add a new subject with default steps automatically added
+    function addSubject() {
+      const nameInput = document.getElementById("subjectName");
+      const deadlineInput = document.getElementById("subjectDeadline");
+      const name = nameInput.value.trim();
+      const deadline = deadlineInput.value;
+      if (!name || !deadline) return alert("Please enter subject name and deadline.");
+      const subject = {
+        id: Date.now(),
+        name,
+        deadline,
+        steps: getDefaultSteps() // Add default steps to every new subject
+      };
+      subjects.push(subject);
+      sortSubjects();
+      saveData();
+      renderSubjects();
+      nameInput.value = "";
+      deadlineInput.value = "";
+    }
+
+    // Render all subjects
+    function renderSubjects() {
+      const container = document.getElementById("subjectsContainer");
+      container.innerHTML = "";
+      subjects.forEach((subject, index) => {
+        // Create subject container
+        const subjDiv = document.createElement("div");
+        subjDiv.className = "subject-container";
+
+        // Subject header with collapsible toggle and controls
+        const header = document.createElement("div");
+        header.className = "subject-header";
+        header.onclick = () => toggleSubjectContent(subject.id);
+
+        const subjectInfo = document.createElement("div");
+        subjectInfo.className = "subject-info";
+        subjectInfo.innerHTML = `<span>${subject.name}</span><small>Deadline: ${subject.deadline}</small>`;
+        header.appendChild(subjectInfo);
+
+        const controls = document.createElement("div");
+        controls.className = "subject-controls";
+        // Prevent header click when clicking on controls
+        controls.onclick = e => e.stopPropagation();
+
+        // Edit Button
+        const editBtn = document.createElement("button");
+        editBtn.className = "edit-btn";
+        editBtn.textContent = "Edit";
+        editBtn.onclick = () => editSubject(subject.id);
+        controls.appendChild(editBtn);
+
+        // Delete Button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete-btn";
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = () => deleteSubject(subject.id);
+        controls.appendChild(deleteBtn);
+
+        header.appendChild(controls);
+        subjDiv.appendChild(header);
+
+        // Collapsible subject content
+        const content = document.createElement("div");
+        content.className = "subject-content";
+        content.id = "subject-content-" + subject.id;
+        // Maintain open state if it was open previously
+        if (openSubjects[subject.id]) {
+          content.classList.add("active");
+        }
+
+        // Form to add a new step
+        const stepForm = document.createElement("div");
+        stepForm.className = "step-form";
+        stepForm.innerHTML = `
+          <input type="text" placeholder="Enter step description" id="stepInput-${subject.id}" />
+          <button onclick="addStep(${subject.id})">Add Step</button>
+        `;
+        content.appendChild(stepForm);
+
+        // Steps list
+        const stepsList = document.createElement("ul");
+        stepsList.className = "steps-list";
+        stepsList.id = "stepsList-" + subject.id;
+        subject.steps.forEach((step, stepIndex) => {
+          const li = document.createElement("li");
+          li.className = step.completed ? "completed" : "";
+          li.innerHTML = `
+            <input type="checkbox" onchange="toggleStep(${subject.id}, ${step.id})" ${step.completed ? "checked" : ""} />
+            <span class="step-number">Step ${stepIndex + 1}:</span>
+            <span class="step-desc">${step.description}</span>
+            <button class="delete-step-btn" onclick="deleteStep(${subject.id}, ${step.id})">Delete</button>
+          `;
+          stepsList.appendChild(li);
+        });
+        content.appendChild(stepsList);
+
+        // Progress Bar
+        const progressContainer = document.createElement("div");
+        progressContainer.className = "progress-container";
+        const progressBar = document.createElement("div");
+        progressBar.className = "progress-bar";
+        progressBar.id = "progressBar-" + subject.id;
+        progressContainer.appendChild(progressBar);
+        content.appendChild(progressContainer);
+
+        // Clear All Checks Button
+        const clearBtn = document.createElement("button");
+        clearBtn.className = "clear-checks-btn";
+        clearBtn.textContent = "Clear All Checks";
+        clearBtn.onclick = () => clearAllChecks(subject.id);
+        content.appendChild(clearBtn);
+
+        subjDiv.appendChild(content);
+        container.appendChild(subjDiv);
+
+        // Update progress bar for this subject
+        updateProgress(subject.id);
+      });
+    }
+
+    // Toggle collapsible subject content and preserve open state
+    function toggleSubjectContent(subjectId) {
+      const content = document.getElementById("subject-content-" + subjectId);
+      if (content) {
+        content.classList.toggle("active");
+        openSubjects[subjectId] = content.classList.contains("active");
+      }
+    }
+
+    // Add a new step to a subject
+    function addStep(subjectId) {
+      const subject = subjects.find(s => s.id === subjectId);
+      const input = document.getElementById("stepInput-" + subjectId);
+      const description = input.value.trim();
+      if (!description) return alert("Please enter a step description.");
+      const step = {
+        id: Date.now(),
+        description,
+        completed: false
+      };
+      subject.steps.push(step);
+      saveData();
+      renderSubjects();
+    }
+
+    // Toggle step completion
+    function toggleStep(subjectId, stepId) {
+      const subject = subjects.find(s => s.id === subjectId);
+      const step = subject.steps.find(st => st.id === stepId);
+      step.completed = !step.completed;
+      saveData();
+      renderSubjects();
+    }
+
+    // Delete a step
+    function deleteStep(subjectId, stepId) {
+      const subject = subjects.find(s => s.id === subjectId);
+      subject.steps = subject.steps.filter(st => st.id !== stepId);
+      saveData();
+      renderSubjects();
+    }
+
+    // Clear all checkboxes (mark all steps as not completed)
+    function clearAllChecks(subjectId) {
+      const subject = subjects.find(s => s.id === subjectId);
+      subject.steps.forEach(step => step.completed = false);
+      saveData();
+      renderSubjects();
+    }
+
+    // Update progress bar for a subject, including percentage text
+    function updateProgress(subjectId) {
+      const subject = subjects.find(s => s.id === subjectId);
+      const total = subject.steps.length;
+      const completed = subject.steps.filter(st => st.completed).length;
+      const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+      const progressBar = document.getElementById("progressBar-" + subjectId);
+      if (progressBar) {
+        progressBar.style.width = percent + "%";
+        progressBar.innerHTML = percent + "% Completed";
+      }
+    }
+
+    // Edit a subject (name and deadline)
+    function editSubject(subjectId) {
+      const subject = subjects.find(s => s.id === subjectId);
+      let newName = prompt("Edit Subject Name: ", subject.name);
+      if (newName === null) return; // Cancelled
+      newName = newName.trim();
+      if (newName === "") return alert("Subject name cannot be empty.");
+      let newDeadline = prompt("Edit Deadline (YYYY-MM-DD):", subject.deadline);
+      if (newDeadline === null) return;
+      if (!newDeadline) return alert("Please enter a valid deadline.");
+      subject.name = newName;
+      subject.deadline = newDeadline;
+      sortSubjects();
+      saveData();
+      renderSubjects();
+    }
+
+    // Delete a subject
+    function deleteSubject(subjectId) {
+      if (!confirm("Are you sure you want to delete this subject?")) return;
+      subjects = subjects.filter(s => s.id !== subjectId);
+      saveData();
+      renderSubjects();
+    }
+  </script>
+</body>
+</html>
